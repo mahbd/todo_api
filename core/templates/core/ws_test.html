@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<h1>Hello world</h1>
+
+<label for="chat-log"></label>
+<textarea id="chat-log" cols="100" rows="20"></textarea><br>
+<label for="access-token-input"></label>
+<input id="access-token-input" type="text" size="100"><br>
+<button id="chat-message-submit">Login</button>
+
+<script>
+    const chatSocket = new WebSocket(
+        window.location.protocol === 'https:' ? 'wss://' : 'ws://'
+            + window.location.host
+            + '/ws/core/'
+    );
+
+    chatSocket.onmessage = function (e) {
+        console.log(e.data);
+        const data = JSON.parse(e.data);
+        document.querySelector('#chat-log').value += (data.message + '\n');
+    };
+
+    chatSocket.onclose = function (e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.querySelector('#access-token-input').focus();
+    document.querySelector('#access-token-input').onkeyup = function (e) {
+        if (e.keyCode === 13) {  // enter, return
+            document.querySelector('#chat-message-submit').click();
+        }
+    };
+
+    document.getElementById('chat-message-submit').onclick = function (e) {
+        console.log('click');
+        const tokenInputDom = document.querySelector('#access-token-input');
+        const message = tokenInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'access_token': message
+        }));
+        tokenInputDom.value = '';
+    };
+</script>
+</body>
+</html>
