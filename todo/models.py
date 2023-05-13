@@ -8,12 +8,13 @@ User = get_user_model()
 class Tag(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.user.username} - {self.title}'
+    # def __str__(self):
+    #     return f'{self.user.username} - {self.title}'
 
     class Meta:
-        ordering = ['title']
+        ordering = ['-created_at']
         unique_together = (('user', 'title'),)
 
 
@@ -22,12 +23,13 @@ class Project(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     deadline = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.user.username} - {self.title}'
+    # def __str__(self):
+    #     return f'{self.user.username} - {self.title}'
 
     class Meta:
-        ordering = ['title']
+        ordering = ['-created_at']
         unique_together = (('user', 'title'),)
 
 
@@ -43,6 +45,13 @@ class Task(models.Model):
     reminder = models.IntegerField(default=0)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # def __str__(self):
+    #     return f'{self.user.username} - {self.title}'
+
+    class Meta:
+        ordering = ['-created_at']
 
 
 class Change(models.Model):
@@ -75,8 +84,29 @@ class Change(models.Model):
     data_id = models.PositiveBigIntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.user.username} - {self.title}'
+    # def __str__(self):
+    #     return f'{self.user.username} - {self.title}'
 
     class Meta:
         ordering = ['-created_at']
+
+
+class Shared(models.Model):
+    SHARED_PROJECT = 'project'
+    SHARED_TAG = 'tag'
+
+    SHARED_TYPE_CHOICES = [
+        (SHARED_PROJECT, 'Project'),
+        (SHARED_TAG, 'Tag'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    shared_with = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shared_with')
+    table = models.CharField(max_length=255, choices=SHARED_TYPE_CHOICES)
+    data_id = models.PositiveBigIntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # def __str__(self):
+    #     return f'{self.user.username} - {self.table} - {self.data_id}'
+
+    class Meta:
+        unique_together = (('user', 'shared_with', 'table', 'data_id'),)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Tag, Change, Project, Task
+from .models import Tag, Change, Project, Task, Shared
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -63,3 +63,19 @@ class TaskSerializer(serializers.ModelSerializer):
             attrs['project'] = project
         attrs['user'] = user
         return attrs
+
+
+class SharedSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(default=serializers.CurrentUserDefault(), read_only=True)
+    title = serializers.SerializerMethodField()
+
+    def get_title(self, obj: Shared):
+        if obj.table == Shared.SHARED_TAG:
+            return Tag.objects.get(id=obj.data_id).title
+        elif obj.table == Shared.SHARED_PROJECT:
+            return Project.objects.get(id=obj.data_id).title
+
+    class Meta:
+        model = Shared
+        fields = ['id', 'user', 'table', 'shared_with', 'data_id', 'title']
+        read_only_fields = ['id', 'user']

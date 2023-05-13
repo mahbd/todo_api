@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 
-from .models import Change, Tag, Task, Project
+from .models import Change, Tag, Task, Project, Shared
 from .serializers import ChangeSerializer
 
 User = get_user_model()
@@ -27,6 +27,8 @@ def on_model_save(instance, **kwargs):
         table = Change.CHANGE_TASK
     elif isinstance(instance, Project):
         table = Change.CHANGE_PROJECT
+    elif isinstance(instance, User):
+        table = Change.CHANGE_USER
     if not table:
         return
 
@@ -71,3 +73,11 @@ def on_change_notify_user(instance, **kwargs):
         data = ChangeSerializer(instance).data
         data['target'] = 'change'
         send2group(str(instance.user.id), data)
+
+
+@receiver(post_delete)
+def clean_shared_on_delete_tag_project(instance, **kwargs):
+    if isinstance(instance, Tag):
+        Shared.objects.filter(table=Shared.SHARED_TAG, data_id=instance.id).delete()
+    elif isinstance(instance, Project):
+        Shared.objects.filter(table=Shared.SHARED_PROJECT, data_id=instance.id).delete()

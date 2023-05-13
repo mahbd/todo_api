@@ -129,7 +129,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
     "TOKEN_OBTAIN_SERIALIZER": "core.serializers.MyTokenObtainPairSerializer",
-    "UPDATE_LAST_LOGIN": True,
+    "UPDATE_LAST_LOGIN": False,
 }
 
 DJOSER = {
