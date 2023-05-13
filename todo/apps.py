@@ -1,11 +1,11 @@
 from django.apps import AppConfig
 
 
-class CoreConfig(AppConfig):
+class TodoConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'core'
+    name = 'todo'
 
     def ready(self) -> None:
         # noinspection PyUnresolvedReferences
-        import core.signals
+        import todo.signals
         super().ready()
