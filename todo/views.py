@@ -4,8 +4,8 @@ from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Tag, Change
-from .serializers import TagSerializer, ChangeSerializer
+from .models import Tag, Change, Project, Task
+from .serializers import TagSerializer, ChangeSerializer, ProjectSerializer, TaskSerializer
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -46,3 +46,21 @@ class ChangeViewSet(viewsets.ReadOnlyModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         print(request.headers)
         return super().retrieve(request, *args, **kwargs)
+
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Project.objects.filter(user=self.request.user)
+
+
+class TaskViewSet(viewsets.ModelViewSet):
+    serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['completed', 'priority', 'project', 'tags']
+
+    def get_queryset(self):
+        return Task.objects.filter(user=self.request.user)

@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 User = get_user_model()
@@ -14,6 +15,34 @@ class Tag(models.Model):
     class Meta:
         ordering = ['title']
         unique_together = (('user', 'title'),)
+
+
+class Project(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    deadline = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user.username} - {self.title}'
+
+    class Meta:
+        ordering = ['title']
+        unique_together = (('user', 'title'),)
+
+
+class Task(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    deadline = models.DateTimeField(blank=True, null=True)
+    duration = models.IntegerField(default=0)
+    completed = models.BooleanField(default=False)
+    occurrence = models.IntegerField(default=0)
+    priority = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(10)])
+    reminder = models.IntegerField(default=0)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, blank=True, null=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
 
 class Change(models.Model):
