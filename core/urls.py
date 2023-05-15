@@ -23,4 +23,5 @@ urlpatterns = [
         template_name='core/redoc.html',
         extra_context={'schema_url': 'core:openapi-schema'}
     ), name='redoc'),
+    path('users/', views.UserListView.as_view(), name='user-list'),
 ]

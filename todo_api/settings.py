@@ -138,7 +138,12 @@ DJOSER = {
                                           'http://localhost:3000/login'],
     'SERIALIZERS': {
         'user_create': 'core.serializers.UserCreateSerializer',
-    }
+        'user': 'core.serializers.UserSerializer',
+    },
+    'PERMISSIONS': {
+        'user_list': ['rest_framework.permissions.IsAuthenticated'],
+        'user': ['rest_framework.permissions.IsAuthenticated'],
+    },
 }
 
 if DEBUG:

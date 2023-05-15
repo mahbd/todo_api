@@ -37,7 +37,10 @@ def on_model_save(instance, **kwargs):
         action = Change.ACTION_CREATE
     Change.objects.filter(table=table, data_id=instance.id).delete()
     change = Change()
-    change.user = instance.user
+    if isinstance(instance, User):
+        change.user = instance
+    else:
+        change.user = instance.user
     change.data_id = instance.id
     change.table = table
     change.action = action
@@ -60,7 +63,10 @@ def on_model_delete(instance, **kwargs):
     # delete all changes for this instance
     Change.objects.filter(table=table, data_id=instance.id).delete()
     change = Change()
-    change.user = instance.user
+    if isinstance(instance, User):
+        change.user = instance
+    else:
+        change.user = instance.user
     change.data_id = instance.id
     change.table = table
     change.action = Change.ACTION_DELETE
