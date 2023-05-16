@@ -2,8 +2,12 @@ from django.urls import include, path
 from django.views.generic import TemplateView
 from rest_framework import permissions
 from rest_framework.schemas import get_schema_view
+from rest_framework.routers import DefaultRouter
 
 from . import views
+
+router = DefaultRouter()
+router.register(r'users', views.UserListView, basename='user')
 
 app_name = 'core'
 urlpatterns = [
@@ -23,5 +27,5 @@ urlpatterns = [
         template_name='core/redoc.html',
         extra_context={'schema_url': 'core:openapi-schema'}
     ), name='redoc'),
-    path('users/', views.UserListView.as_view(), name='user-list'),
+    path('', include(router.urls)),
 ]

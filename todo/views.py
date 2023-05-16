@@ -44,7 +44,9 @@ class ChangeViewSet(viewsets.ReadOnlyModelViewSet):
     filterset_class = ChangeFilter
 
     def get_queryset(self):
-        return Change.objects.filter(user=self.request.user)
+        user = self.request.user
+        query = Q(user=user)|Q(table=Change.CHANGE_USER)
+        return Change.objects.filter(query)
 
     def retrieve(self, request, *args, **kwargs):
         print(request.headers)

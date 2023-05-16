@@ -79,3 +79,7 @@ class SharedSerializer(serializers.ModelSerializer):
         model = Shared
         fields = ['id', 'user', 'table', 'shared_with', 'data_id', 'title']
         read_only_fields = ['id', 'user']
+
+    def validate(self, attrs: dict):
+        attrs['user'] = self.context['request'].user
+        return attrs
