@@ -2,11 +2,9 @@ import json
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncWebsocketConsumer
-from django.contrib.auth import get_user_model
-from django.contrib.auth.models import AnonymousUser
+# from django.contrib.auth import get_user_model
+# from django.contrib.auth.models import AnonymousUser
 from rest_framework_simplejwt.authentication import JWTAuthentication
-
-User = get_user_model()
 
 
 class CoreConsumer(AsyncWebsocketConsumer):
@@ -15,6 +13,7 @@ class CoreConsumer(AsyncWebsocketConsumer):
         self.room_group_name = None
 
     async def connect(self):
+        from django.contrib.auth.models import AnonymousUser
         self.scope["user"] = AnonymousUser()
         self.room_group_name = "public"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
@@ -24,6 +23,7 @@ class CoreConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     async def receive(self, text_data=None, bytes_data=None):
+        from django.contrib.auth.models import AnonymousUser
         text_data_json = json.loads(text_data)
         if text_data_json.get("access_token") and not self.scope["user"].is_authenticated:
             self.scope["user"] = await verify_user(text_data_json.get("access_token"))
@@ -51,7 +51,8 @@ class CoreConsumer(AsyncWebsocketConsumer):
 
 
 @database_sync_to_async
-def verify_user(access_token: str) -> User:
+def verify_user(access_token: str):
+    from django.contrib.auth.models import AnonymousUser
     try:
         c = JWTAuthentication()
         validated_token = c.get_validated_token(access_token)
