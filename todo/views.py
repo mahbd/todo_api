@@ -100,4 +100,5 @@ class SharedViewSet(viewsets.ModelViewSet):
     filterset_fields = ['table', 'user__username', 'shared_with__username']
 
     def get_queryset(self):
-        return Shared.objects.filter(user=self.request.user)
+        query = Q(user=self.request.user) | Q(shared_with=self.request.user)
+        return Shared.objects.filter(query)
