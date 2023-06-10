@@ -7,7 +7,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = os.environ.get('DEBUG') == 'True'
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.0.2.2', 'api.re-todo.tk']
-CSRF_TRUSTED_ORIGINS = ['api.re-todo.tk']
+CSRF_TRUSTED_ORIGINS = ['https://api.re-todo.tk', 'https://re-todo.tk']
 
 INSTALLED_APPS = [
     'daphne',
